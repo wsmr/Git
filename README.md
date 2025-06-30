@@ -72,7 +72,17 @@ git remote set-url origin your-new-remote-repository-url
 
 This command is useful if the repository's remote URL changes or if you initially cloned using HTTPS and now wish to switch to SSH, or vice-versa. It's an alternative to removing and re-adding the remote, providing a cleaner way to update the remote configuration.
 
+**Cloning a Specific Branch:**
 
+Sometimes, you might want to clone a specific branch of a repository directly, rather than the default branch (usually `main` or `master`). This is particularly useful for projects that maintain different branches for active development and stable releases.
+
+To clone a specific branch (e.g., `stable`):
+
+```bash
+git clone -b stable https://github.com/your-username/your-repo.git
+```
+
+The `-b` (or `--branch`) flag tells Git which branch to check out immediately after cloning. This avoids the need to manually switch branches after the initial clone.
 
 ## 3. Basic Git Commands
 
@@ -186,10 +196,6 @@ To fetch all branches and their respective commits from the remote repository:
 git fetch origin
 ```
 
-
-
-
-
 ## 4. Git Configuration
 
 Git allows extensive configuration to tailor its behavior to your preferences and project needs. These configurations can be set at different levels: system, global (user), and local (repository).
@@ -274,8 +280,6 @@ git config --global core.autocrlf false
 ```
 
 For most macOS and Linux users, setting `core.autocrlf` to `input` is recommended. This helps maintain consistent line endings across different development environments.
-
-
 
 ## 5. Understanding Git History
 
@@ -381,8 +385,6 @@ git commit -m "Second part of the commit message"
     ```
 
 This process allows you to refine your commit history by breaking down a single amended commit into more granular, logically separated commits.
-
-
 
 ## 6. Managing Files with .gitignore
 
@@ -494,9 +496,6 @@ Adhering to these best practices will help you maintain a clean and efficient Gi
 
 [1] GitHub. (n.d.). `gitignore` templates. Retrieved from `https://github.com/github/gitignore`
 
-
-
-
 ## 7. Troubleshooting Common Git Issues
 
 Even with a good understanding of Git, you might encounter common issues. This section provides solutions and explanations for some frequently faced problems.
@@ -505,49 +504,120 @@ Even with a good understanding of Git, you might encounter common issues. This s
 
 One common error message you might encounter is: `Updates were rejected because the remote contains work that you do not have locally`. This means that the remote repository has commits that are not present in your local branch, and Git prevents you from pushing your changes directly to avoid overwriting remote work.
 
-**Solution: Fetch and Merge Remote Changes (Recommended)**
+**Solution 1: Merge Remote Changes Locally and Push (Recommended)**
 
 The safest and most common way to resolve this is to first pull the latest changes from the remote, integrate them with your local commits, and then push.
 
-```bash
-git pull origin main --rebase
-```
+1.  **Set upstream branch:**
 
-This command does two things:
-1.  `git fetch origin main`: Downloads the latest changes from the `main` branch of the `origin` remote.
-2.  `git rebase`: Reapplies your local commits on top of the newly fetched remote changes. This creates a linear history, which is generally preferred for cleaner commit logs.
+    ```bash
+git branch --set-upstream-to=origin/main main
+    ```
 
-**Resolve Any Merge Conflicts (If Any)**
+    This command sets up your local `main` branch to track the `main` branch on the `origin` remote.
 
-If Git detects conflicts during the rebase process (meaning both you and the remote made changes to the same lines of code), it will pause the rebase and ask you to manually resolve them. Git will indicate the conflicting files. Open these files, resolve the conflicts, and then mark them as resolved.
+2.  **Pull remote changes and merge them locally:**
 
-```bash
-git add .
-```
+    ```bash
+git pull origin main --allow-unrelated-histories
+    ```
 
-After resolving all conflicts and staging the changes, continue the rebase:
+    The `--allow-unrelated-histories` flag is crucial when merging two branches that do not share a common commit history (e.g., when you initialize a new local repository and then try to push to an existing remote that already has some commits like a license file). Git may open an editor (like Vim) to finalize a merge commit message. To save and exit in Vim:
 
-```bash
-git rebase --continue
-```
+    *   Press `i` to go into insert mode.
+    *   Type your commit message (or leave the default).
+    *   Press `Esc`.
+    *   Type `:wq` and hit `Enter`.
 
-**Push Your Changes**
+3.  **Push your changes:**
 
-Once the rebase is complete and all conflicts are resolved, you can push your updated code to the remote repository without rejection:
+    ```bash
+git push origin main
+    ```
 
-```bash
-git push -u origin main
-```
+**Solution 2: Alternative (If You Want to Overwrite the Remote Repo)**
 
-**⚠️ Warning: Alternative (If You Want to Overwrite the Remote)**
-
-Only in very specific scenarios, if you are absolutely certain that your local changes should completely replace the remote content and you want to discard any changes on the remote, you can force push. **Use this with extreme caution**, as it will overwrite the remote branch and remove any commits that are not in your local copy. This can lead to data loss for other collaborators.
+**⚠️ Use this with extreme caution.** This will delete everything currently in the remote repository and replace it with your local files. Only use this if you are absolutely sure you want to discard all remote changes and replace them with your local version.
 
 ```bash
-git push -u origin main --force
+git push origin main --force
 ```
 
-### 7.2 GitHub File Not Showing (Incorrect File Creation/Ignored)
+### 7.2 Handling Diverged Branches During Pull
+
+If your local and remote branches have diverged (both have new commits that the other doesn't have), Git needs to know how to combine them during a pull. You might see a message indicating this divergence.
+
+**What This Means:**
+
+Your local branch and the remote branch both have new commits that the other doesn't have. Git needs to know whether to:
+
+*   Merge the changes (default in older Git versions).
+*   Rebase your changes on top of the remote.
+*   Fast-forward only (only allow pull if the remote is ahead and no conflict exists).
+
+**Fix Option 1: Merge (Safe and Common)**
+
+This option merges the remote changes into your local branch with a merge commit.
+
+```bash
+git config pull.rebase false
+git pull
+```
+
+**Fix Option 2: Rebase (Cleaner History, Advanced)**
+
+This option re-applies your local commits on top of the latest remote commits. This results in a cleaner, linear history but can cause conflicts that you'll need to resolve.
+
+```bash
+git config pull.rebase true
+git pull --rebase
+```
+
+**Fix Option 3: One-time Override**
+
+If you don't want to change your global Git configuration, you can use these options for a one-time pull:
+
+*   **Merge:**
+
+    ```bash
+git pull --no-rebase
+    ```
+
+*   **Rebase:**
+
+    ```bash
+git pull --rebase
+    ```
+
+*   **Fast-forward only:**
+
+    ```bash
+git pull --ff-only
+    ```
+
+**To Set as Global Default (Recommended for Future Clarity):**
+
+Choose one of these to set your preferred default behavior for `git pull`:
+
+*   **Merge (recommended for simplicity):**
+
+    ```bash
+git config --global pull.rebase false
+    ```
+
+*   **Rebase (recommended for cleaner history, if comfortable with conflict resolution):**
+
+    ```bash
+git config --global pull.rebase true
+    ```
+
+*   **Fast-forward only:**
+
+    ```bash
+git config --global pull.ff only
+    ```
+
+### 7.3 GitHub File Not Showing (Incorrect File Creation/Ignored)
 
 This issue typically arises when you attempt to add a file, but it doesn't appear in your Git repository or on GitHub after pushing. Common causes include incorrect file creation commands or the file being ignored by a `.gitignore` rule.
 
@@ -659,8 +729,177 @@ git commit -m "Add deploy workflow"
 git push
 ```
 
+### 7.4 Resolving 
 
 
+SSH Key Errors (Permission Denied)
+
+If you encounter an error message like `no such identity: /Users/sahan/.ssh/id_ed25519: No such file or directory` or `git@github.com: Permission denied (publickey)`, it indicates that Git is configured to use SSH for connecting to GitHub, but it cannot find or use your SSH private key.
+
+**Root Cause:**
+
+Your Git configuration (e.g., `remote.origin.url=git@github.com:your-username/your-repo.git`) specifies SSH for remote operations, but the SSH private key file it expects (`~/.ssh/id_ed25519` in the example) either does not exist or is not accessible. Consequently, GitHub denies access because it cannot authenticate your connection.
+
+**🛠️ Solution Options:**
+
+**Option 1: Use HTTPS Instead of SSH (Simpler)**
+
+If you prefer not to manage SSH keys, you can switch your remote URL to use HTTPS. This will prompt you for your GitHub credentials (username and password, or a Personal Access Token) when performing operations that require authentication.
+
+```bash
+git remote set-url origin https://github.com/your-username/your-repo.git
+```
+
+After changing the URL, `git pull` and `git push` operations will use HTTPS for authentication.
+
+**Option 2: Fix SSH Key (Advanced / Recommended for Power Users)**
+
+If you prefer to use SSH for its security and convenience (especially for automation), you need to ensure your SSH key is correctly set up and accessible.
+
+1.  **Check for Existing SSH Keys:**
+
+    First, verify if you have any existing SSH keys in your `~/.ssh/` directory:
+
+    ```bash
+ls -la ~/.ssh/
+    ```
+
+    Look for files like `id_rsa`, `id_ecdsa`, or `id_ed25519` (private keys) and their corresponding `.pub` files (public keys). If you don't find any, you'll need to generate a new one.
+
+2.  **Generate a New SSH Key (if needed):**
+
+    If you don't have an existing key or want to create a new one, use `ssh-keygen`. Replace `your-email@example.com` with your GitHub email address.
+
+    ```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+    ```
+
+    Press `Enter` to accept the default file path (e.g., `/Users/your-username/.ssh/id_ed25519`). You can optionally set a strong passphrase for added security.
+
+3.  **Add the Key to SSH Agent:**
+
+    The `ssh-agent` manages your SSH keys and passphrases, so you don't have to enter your passphrase every time you use your key.
+
+    *   Start the `ssh-agent`:
+
+        ```bash
+eval "$(ssh-agent -s)"
+        ```
+
+    *   Add your private key to the agent:
+
+        ```bash
+ssh-add ~/.ssh/id_ed25519
+        ```
+
+        (Replace `id_ed25519` with your actual private key filename if different.) You will be prompted for your passphrase if you set one.
+
+4.  **Add the SSH Key to GitHub:**
+
+    You need to add your public SSH key to your GitHub account so GitHub can authenticate you.
+
+    *   **Copy your public key to your clipboard:**
+
+        ```bash
+cat ~/.ssh/id_ed25519.pub
+        ```
+
+        Copy the entire output.
+
+    *   **Go to GitHub:** Navigate to `Settings` -> `SSH and GPG keys` -> `New SSH key`. Paste the copied public key into the 
+
+
+field and give it a descriptive title (e.g., "My Laptop SSH Key").
+
+5.  **Test Your SSH Connection:**
+
+    After adding the key to GitHub, test your connection to ensure everything is set up correctly:
+
+    ```bash
+ssh -T git@github.com
+    ```
+
+    A successful connection will display a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
+
+**Bonus: Typo in Your Remote URL?**
+
+Sometimes, the issue might be a simple typo in your remote URL. Double-check the actual repository name on GitHub and correct it if needed:
+
+```bash
+git remote set-url origin git@github.com:your-username/your-correct-repo-name.git
+```
+
+### 7.5 Resolving `.DS_Store` and `.idea/` Issues
+
+Files like `.DS_Store` (macOS system files) and `.idea/` directories (IDE-specific configuration for IntelliJ/Android Studio) are often accidentally staged or committed. These files should typically be ignored by Git to prevent unnecessary commits and conflicts.
+
+**Problem: `.DS_Store` is staged and Git refuses to remove it.**
+
+If you see an error indicating that `.DS_Store` is staged and Git doesn't want to remove it, it means the file's content in the staging area differs from both your working directory and the last committed version. Git is being cautious.
+
+**Solution:**
+
+To forcefully remove `.DS_Store` from Git's tracking (but keep it locally):
+
+```bash
+git rm -f --cached .DS_Store
+```
+
+**Next Steps (Recommended for `.DS_Store` files):**
+
+Add `.DS_Store` to your `.gitignore` file so it doesn't get tracked again. You can do this by appending the line to your `.gitignore`:
+
+```bash
+echo .DS_Store >> .gitignore
+```
+
+Then, commit the changes to your `.gitignore`:
+
+```bash
+git commit -m "Remove .DS_Store and update .gitignore"
+```
+
+**Problem: Git refuses to remove `.idea/` directory.**
+
+If Git refuses to remove a directory like `android/.idea/` because its files are staged, it means the files within that directory are in Git's index but not yet committed, and Git requires explicit confirmation for their removal.
+
+**Solution Options:**
+
+1.  **Remove `.idea/` from Git but keep it locally (Most Common):**
+
+    This is the typical approach for IDE-specific folders. It removes the directory from Git's tracking but leaves it in your local working directory.
+
+    ```bash
+git rm -r --cached android/.idea/
+    ```
+
+    Then, add it to your `.gitignore` file to prevent it from being tracked again:
+
+    ```bash
+echo android/.idea/ >> .gitignore
+    ```
+
+    Finally, commit these changes:
+
+    ```bash
+git commit -m "Remove android/.idea/ from git tracking and update .gitignore"
+    ```
+
+2.  **Remove the `.idea/` directory from Git AND your local machine:**
+
+    If you want to completely remove the directory from both Git and your local filesystem:
+
+    ```bash
+git rm -rf android/.idea/
+    ```
+
+    Then commit the removal:
+
+    ```bash
+git commit -m "Remove android/.idea/ completely"
+    ```
+
+**💡 Important Tip:** `.idea/` folders are specific to IDEs (like Android Studio or IntelliJ) and generally should not be version controlled. Excluding them from your repository helps avoid conflicts and keeps your repository clean and focused on source code.
 
 ## 8. Advanced Topics
 
@@ -746,44 +985,39 @@ eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_ed25519
         ```
 
-        Replace `id_ed25519` with the name of your private key file if it's different (e.g., `id_rsa`). If you set a passphrase, you will be prompted to enter it here.
+        (Replace `id_ed25519` with the name of your private key file if it's different (e.g., `id_rsa`). If you set a passphrase, you will be prompted to enter it here.
 
 4.  **Add the SSH key to your GitHub account:**
 
-    *   **Copy your public SSH key to your clipboard.** The public key typically has a `.pub` extension.
+    You need to add your public SSH key to your GitHub account so GitHub can authenticate you.
 
-        On macOS:
-
-        ```bash
-pbcopy < ~/.ssh/id_ed25519.pub
-        ```
-
-        On Linux (requires `xclip` or `xsel`):
+    *   **Copy your public key to your clipboard:**
 
         ```bash
-xclip -sel clip < ~/.ssh/id_ed25519.pub
+cat ~/.ssh/id_ed25519.pub
         ```
 
-        On Windows (using Git Bash):
+        Copy the entire output.
 
-        ```bash
-cat ~/.ssh/id_ed25519.pub | clip
-        ```
+    *   **Go to GitHub:** Navigate to `Settings` -> `SSH and GPG keys` -> `New SSH key`. Paste the copied public key into the field and give it a descriptive title (e.g., "My Laptop SSH Key").
 
-        Alternatively, you can open the `.pub` file in a text editor and copy its entire content.
+5.  **Test Your SSH Connection:**
 
-    *   **Go to GitHub settings:** Navigate to your GitHub account settings, then to 
+    After adding the key to GitHub, test your connection to ensure everything is set up correctly:
 
+    ```bash
+ssh -T git@github.com
+    ```
 
-SSH and GPG keys, and add a new SSH key. Paste the copied public key into the provided field and give it a descriptive title.
+    A successful connection will display a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
 
-After adding the key to GitHub, you can test your SSH connection:
+**Bonus: Typo in Your Remote URL?**
+
+Sometimes, the issue might be a simple typo in your remote URL. Double-check the actual repository name on GitHub and correct it if needed:
 
 ```bash
-ssh -T git@github.com
+git remote set-url origin git@github.com:your-username/your-correct-repo-name.git
 ```
-
-If successful, you will see a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
 
 ## 9. Summary of Key Git Commands
 
@@ -815,3 +1049,76 @@ This section provides a quick reference for some of the most frequently used Git
 
 
 
+
+
+### 7.6 Resolving Staged File Removal Issues
+
+Sometimes, Git might refuse to remove a file or directory because its contents are staged (added to Git's index but not yet committed), and Git requires explicit confirmation for the removal.
+
+**Problem: Git refuses to remove a staged file (e.g., `.DS_Store`).**
+
+If you encounter an error message indicating that a file like `.DS_Store` is staged and Git doesn't want to remove it, it means the file's content in the staging area differs from both your working directory and the last committed version. Git is being cautious and wants you to explicitly confirm the removal.
+
+**Solution:**
+
+To forcefully remove the file from Git's tracking (but keep it locally), use the `-f` (force) and `--cached` flags:
+
+```bash
+git rm -f --cached .DS_Store
+```
+
+**Next Steps (Recommended for `.DS_Store` files):**
+
+After untracking, it's crucial to add `.DS_Store` to your `.gitignore` file to prevent it from being tracked again in the future. You can append the line to your `.gitignore` file:
+
+```bash
+echo .DS_Store >> .gitignore
+```
+
+Then, commit these changes to your `.gitignore`:
+
+```bash
+git commit -m "Remove .DS_Store from tracking and update .gitignore"
+```
+
+**Problem: Git refuses to remove a staged directory (e.g., `android/.idea/`).**
+
+If Git refuses to remove a directory like `android/.idea/` because its files are staged, it means the files within that directory are in Git's index but not yet committed, and Git requires explicit confirmation for their removal.
+
+**Solution Options:**
+
+1.  **Remove the directory from Git but keep it locally (Most Common):**
+
+    This is the typical approach for IDE-specific folders. It removes the directory from Git's tracking but leaves it in your local working directory.
+
+    ```bash
+git rm -r --cached android/.idea/
+    ```
+
+    Then, add it to your `.gitignore` file to prevent it from being tracked again:
+
+    ```bash
+echo android/.idea/ >> .gitignore
+    ```
+
+    Finally, commit these changes:
+
+    ```bash
+git commit -m "Remove android/.idea/ from git tracking and update .gitignore"
+    ```
+
+2.  **Remove the directory from Git AND your local machine:**
+
+    If you want to completely remove the directory from both Git and your local filesystem:
+
+    ```bash
+git rm -rf android/.idea/
+    ```
+
+    Then commit the removal:
+
+    ```bash
+git commit -m "Remove android/.idea/ completely"
+    ```
+
+**💡 Important Tip:** `.idea/` folders are specific to IDEs (like Android Studio or IntelliJ) and generally should not be version controlled. Excluding them from your repository helps avoid conflicts and keeps your repository clean and focused on source code.
