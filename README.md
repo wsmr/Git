@@ -400,13 +400,13 @@ To set up a `.gitignore` file, you typically create it in the root directory of 
 
 1.  **Create the `.gitignore` file:**
 
-    ```bash
+```bash
 touch .gitignore
-    ```
+```
 
 2.  **Add patterns to the file.** Below is a suggested `.gitignore` template for projects that might involve both Node.js and Python components, along with common system and log files. You should adapt this to your specific project needs.
 
-    ```
+```
 # Node.js specific ignores
 node_modules/
 npm-debug.log
@@ -431,16 +431,16 @@ Thumbs.db
 
 # Log files
 *.log
-    ```
+```
 
 3.  **Save and commit the `.gitignore` file:**
 
     After adding your desired patterns, save the file and commit it to your repository. This ensures that all collaborators will use the same ignore rules.
 
-    ```bash
+```bash
 git add .gitignore
 git commit -m "Add .gitignore"
-    ```
+```
 
     GitHub maintains extensive `.gitignore` templates for various programming languages and frameworks, which can be a great starting point for your projects [1]. You can find these templates at `https://github.com/github/gitignore`.
 
@@ -510,17 +510,17 @@ The safest and most common way to resolve this is to first pull the latest chang
 
 1.  **Set upstream branch:**
 
-    ```bash
+```bash
 git branch --set-upstream-to=origin/main main
-    ```
+```
 
     This command sets up your local `main` branch to track the `main` branch on the `origin` remote.
 
 2.  **Pull remote changes and merge them locally:**
 
-    ```bash
+```bash
 git pull origin main --allow-unrelated-histories
-    ```
+```
 
     The `--allow-unrelated-histories` flag is crucial when merging two branches that do not share a common commit history (e.g., when you initialize a new local repository and then try to push to an existing remote that already has some commits like a license file). Git may open an editor (like Vim) to finalize a merge commit message. To save and exit in Vim:
 
@@ -531,9 +531,9 @@ git pull origin main --allow-unrelated-histories
 
 3.  **Push your changes:**
 
-    ```bash
+```bash
 git push origin main
-    ```
+```
 
 **Solution 2: Alternative (If You Want to Overwrite the Remote Repo)**
 
@@ -579,21 +579,21 @@ If you don't want to change your global Git configuration, you can use these opt
 
 *   **Merge:**
 
-    ```bash
+```bash
 git pull --no-rebase
-    ```
+```
 
 *   **Rebase:**
 
-    ```bash
+```bash
 git pull --rebase
-    ```
+```
 
 *   **Fast-forward only:**
 
-    ```bash
+```bash
 git pull --ff-only
-    ```
+```
 
 **To Set as Global Default (Recommended for Future Clarity):**
 
@@ -601,21 +601,21 @@ Choose one of these to set your preferred default behavior for `git pull`:
 
 *   **Merge (recommended for simplicity):**
 
-    ```bash
+```bash
 git config --global pull.rebase false
-    ```
+```
 
 *   **Rebase (recommended for cleaner history, if comfortable with conflict resolution):**
 
-    ```bash
+```bash
 git config --global pull.rebase true
-    ```
+```
 
 *   **Fast-forward only:**
 
-    ```bash
+```bash
 git config --global pull.ff only
-    ```
+```
 
 ### 7.3 GitHub File Not Showing (Incorrect File Creation/Ignored)
 
@@ -669,26 +669,26 @@ Based on the output from Step 2, you have two main options:
 
     **Before (too broad):**
 
-    ```
+```
 .github/
-    ```
+```
 
     **After (more specific, allowing workflows):**
 
-    ```
+```
 # Ignore all .github content EXCEPT workflows and deploy.yml
 .github/*
 !.github/workflows/
 !.github/workflows/deploy.yml
-    ```
+```
 
 *   **Option B – Force Add the File:** If you prefer not to modify your `.gitignore` file, you can force Git to add the ignored file for a single instance. This is generally not recommended for files that should always be tracked, but can be useful in specific edge cases.
 
-    ```bash
+```bash
 git add -f .github/workflows/deploy.yml
 git commit -m "Add GitHub Actions deploy workflow"
 git push
-    ```
+```
 
 **✅ Step 4: Confirm the File Was Added**
 
@@ -760,9 +760,9 @@ If you prefer to use SSH for its security and convenience (especially for automa
 
     First, verify if you have any existing SSH keys in your `~/.ssh/` directory:
 
-    ```bash
+```bash
 ls -la ~/.ssh/
-    ```
+```
 
     Look for files like `id_rsa`, `id_ecdsa`, or `id_ed25519` (private keys) and their corresponding `.pub` files (public keys). If you don't find any, you'll need to generate a new one.
 
@@ -770,9 +770,9 @@ ls -la ~/.ssh/
 
     If you don't have an existing key or want to create a new one, use `ssh-keygen`. Replace `your-email@example.com` with your GitHub email address.
 
-    ```bash
+```bash
 ssh-keygen -t ed25519 -C "your-email@example.com"
-    ```
+```
 
     Press `Enter` to accept the default file path (e.g., `/Users/your-username/.ssh/id_ed25519`). You can optionally set a strong passphrase for added security.
 
@@ -782,15 +782,15 @@ ssh-keygen -t ed25519 -C "your-email@example.com"
 
     *   Start the `ssh-agent`:
 
-        ```bash
+```bash
 eval "$(ssh-agent -s)"
-        ```
+```
 
     *   Add your private key to the agent:
 
-        ```bash
+```bash
 ssh-add ~/.ssh/id_ed25519
-        ```
+```
 
         (Replace `id_ed25519` with your actual private key filename if different.) You will be prompted for your passphrase if you set one.
 
@@ -800,9 +800,9 @@ ssh-add ~/.ssh/id_ed25519
 
     *   **Copy your public key to your clipboard:**
 
-        ```bash
+```bash
 cat ~/.ssh/id_ed25519.pub
-        ```
+```
 
         Copy the entire output.
 
@@ -815,9 +815,9 @@ field and give it a descriptive title (e.g., "My Laptop SSH Key").
 
     After adding the key to GitHub, test your connection to ensure everything is set up correctly:
 
-    ```bash
+```bash
 ssh -T git@github.com
-    ```
+```
 
     A successful connection will display a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
 
@@ -869,186 +869,37 @@ If Git refuses to remove a directory like `android/.idea/` because its files are
 
     This is the typical approach for IDE-specific folders. It removes the directory from Git's tracking but leaves it in your local working directory.
 
-    ```bash
+```bash
 git rm -r --cached android/.idea/
-    ```
+```
 
     Then, add it to your `.gitignore` file to prevent it from being tracked again:
 
-    ```bash
+```bash
 echo android/.idea/ >> .gitignore
-    ```
+```
 
     Finally, commit these changes:
 
-    ```bash
+```bash
 git commit -m "Remove android/.idea/ from git tracking and update .gitignore"
-    ```
+```
 
 2.  **Remove the `.idea/` directory from Git AND your local machine:**
 
     If you want to completely remove the directory from both Git and your local filesystem:
 
-    ```bash
+```bash
 git rm -rf android/.idea/
-    ```
+```
 
     Then commit the removal:
 
-    ```bash
-git commit -m "Remove android/.idea/ completely"
-    ```
-
-**💡 Important Tip:** `.idea/` folders are specific to IDEs (like Android Studio or IntelliJ) and generally should not be version controlled. Excluding them from your repository helps avoid conflicts and keeps your repository clean and focused on source code.
-
-## 8. Advanced Topics
-
-This section delves into more advanced Git topics, including how to clean your Git history of sensitive data and how to set up SSH keys for secure authentication with GitHub.
-
-### 8.1 Clean Git History (Removing Sensitive Data)
-
-If sensitive credentials, API keys, or other confidential information are accidentally committed to your Git repository, simply deleting the file and committing again is not enough. The sensitive data will still exist in the repository's history. To truly remove such data from all commits, you need to rewrite the Git history.
-
-**Warning:** Rewriting Git history is a powerful operation that changes the commit hashes. If the repository has already been shared with others, this can cause significant issues for collaborators. Always communicate with your team before performing such operations.
-
-Two common tools for cleaning Git history are `git-filter-repo` and BFG Repo-Cleaner.
-
-**Using `git-filter-repo`:**
-
-`git-filter-repo` is a highly efficient tool for rewriting repository history. It needs to be installed separately.
-
-1.  **Install `git-filter-repo` (if not already installed):**
-
-    ```bash
-pip install git-filter-repo
-    ```
-
-2.  **Remove the sensitive content from all commits:**
-
-    This example demonstrates removing a file named `README.md` from the history. Replace `README.md` with the actual path to the file containing sensitive data. The `--invert-paths` flag ensures that everything *except* the specified path is kept, effectively removing the path.
-
-    ```bash
-git filter-repo --path path/to/sensitive-file.txt --invert-paths --force
-    ```
-
-    If the sensitive data is within a specific file that you want to keep but remove the sensitive content from, you might need more advanced filtering or use BFG Repo-Cleaner.
-
-**Using BFG Repo-Cleaner:**
-
-BFG Repo-Cleaner is another powerful tool, often simpler to use for common cleanup tasks like removing large files or sensitive data. It is a JAR file and requires Java to run.
-
-For more complex cleanup scenarios, such as removing specific text from all files in the history, BFG Repo-Cleaner might be more suitable. Refer to its official documentation for detailed usage instructions.
-
-### 8.2 SSH Key Setup for GitHub
-
-SSH (Secure Shell) keys provide a secure way to authenticate with GitHub without exposing your username and password. This is generally recommended for frequent interactions with remote repositories.
-
-1.  **Check for existing SSH keys:**
-
-    Open your terminal and list the contents of your `.ssh` directory:
-
-    ```bash
-ls -al ~/.ssh
-    ```
-
-    Look for files like `id_rsa.pub`, `id_ecdsa.pub`, or `id_ed25519.pub`. These are your public SSH keys. If you find existing keys, you might be able to use one of them. If no keys exist, proceed to generate a new SSH key.
-
-2.  **Generate a new SSH key:**
-
-    Run the following command, replacing `your-email@example.com` with your actual email address associated with your GitHub account:
-
-    ```bash
-ssh-keygen -t ed25519 -C "your-email@example.com"
-    ```
-
-    The `ed25519` algorithm is generally recommended for its security and performance. If your system does not support `ed25519`, you can use the RSA algorithm:
-
-    ```bash
-ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
-    ```
-
-    Follow the prompts to save the key to the default location (`~/.ssh/id_ed25519` or `~/.ssh/id_rsa`) and optionally add a strong passphrase for extra security. A passphrase encrypts your private key on disk, requiring you to enter it whenever you use the key.
-
-3.  **Add the SSH key to the `ssh-agent`:**
-
-    The `ssh-agent` is a program that holds your private keys in memory, so you don't have to enter your passphrase every time you use your SSH key.
-
-    *   **Start the `ssh-agent` in the background:**
-
-        ```bash
-eval "$(ssh-agent -s)"
-        ```
-
-    *   **Add your SSH private key to the agent:**
-
-        ```bash
-ssh-add ~/.ssh/id_ed25519
-        ```
-
-        (Replace `id_ed25519` with the name of your private key file if it's different (e.g., `id_rsa`). If you set a passphrase, you will be prompted to enter it here.
-
-4.  **Add the SSH key to your GitHub account:**
-
-    You need to add your public SSH key to your GitHub account so GitHub can authenticate you.
-
-    *   **Copy your public key to your clipboard:**
-
-        ```bash
-cat ~/.ssh/id_ed25519.pub
-        ```
-
-        Copy the entire output.
-
-    *   **Go to GitHub:** Navigate to `Settings` -> `SSH and GPG keys` -> `New SSH key`. Paste the copied public key into the field and give it a descriptive title (e.g., "My Laptop SSH Key").
-
-5.  **Test Your SSH Connection:**
-
-    After adding the key to GitHub, test your connection to ensure everything is set up correctly:
-
-    ```bash
-ssh -T git@github.com
-    ```
-
-    A successful connection will display a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
-
-**Bonus: Typo in Your Remote URL?**
-
-Sometimes, the issue might be a simple typo in your remote URL. Double-check the actual repository name on GitHub and correct it if needed:
-
 ```bash
-git remote set-url origin git@github.com:your-username/your-correct-repo-name.git
+git commit -m "Remove android/.idea/ completely"
 ```
 
-## 9. Summary of Key Git Commands
-
-This section provides a quick reference for some of the most frequently used Git commands discussed in this document.
-
-| Command | Description | Example Usage |
-|---|---|---|
-| `git init` | Initializes a new Git repository in the current directory. | `git init` |
-| `git status` | Shows the status of changes as untracked, modified, or staged. | `git status` |
-| `git add .` | Stages all changes in the current directory for the next commit. | `git add .` |
-| `git commit -m "Message"` | Records staged changes to the repository with a message. | `git commit -m "Initial commit"` |
-| `git remote add origin URL` | Adds a new remote repository. | `git remote add origin https://github.com/user/repo.git` |
-| `git remote -v` | Lists all configured remote repositories. | `git remote -v` |
-| `git remote set-url origin URL` | Changes the URL of an existing remote. | `git remote set-url origin https://github.com/user/new-repo.git` |
-| `git push -u origin branch` | Pushes local commits to a remote repository and sets upstream. | `git push -u origin main` |
-| `git pull origin branch` | Fetches from and integrates with another repository or a local branch. | `git pull origin main` |
-| `git fetch origin` | Downloads objects and refs from another repository. | `git fetch origin` |
-| `git branch` | Lists, creates, or deletes branches. | `git branch` |
-| `git checkout branch` | Switches to a specified branch. | `git checkout develop` |
-| `git checkout -b new-branch` | Creates a new branch and switches to it. | `git checkout -b feature/new-feature` |
-| `git config --list` | Lists all Git configurations. | `git config --list` |
-| `git config --global user.name "Name"` | Sets the global user name for commits. | `git config --global user.name "John Doe"` |
-| `git config --global user.email "Email"` | Sets the global user email for commits. | `git config --global user.email "john.doe@example.com"` |
-| `git log` | Shows the commit history. | `git log` |
-| `git log --oneline` | Shows a compact commit history. | `git log --oneline` |
-| `git commit --amend -m "Msg"` | Amends the last commit message. | `git commit --amend -m "Updated message"` |
-| `git rm --cached file` | Untracks a file from Git without deleting it locally. | `git rm --cached unwanted-file.log` |
-| `git check-ignore -v file` | Shows which .gitignore rule is ignoring a file. | `git check-ignore -v .github/workflows/deploy.yml` |
-
-
-
+**💡 Important Tip:** `.idea/` folders are specific to IDEs (like Android Studio or IntelliJ) and generally should not be version controlled. Excluding them from your repository helps avoid conflicts and keeps your repository clean and focused on source code.
 
 
 ### 7.6 Resolving Staged File Removal Issues
@@ -1091,34 +942,182 @@ If Git refuses to remove a directory like `android/.idea/` because its files are
 
     This is the typical approach for IDE-specific folders. It removes the directory from Git's tracking but leaves it in your local working directory.
 
-    ```bash
+```bash
 git rm -r --cached android/.idea/
-    ```
+```
 
     Then, add it to your `.gitignore` file to prevent it from being tracked again:
 
-    ```bash
+```bash
 echo android/.idea/ >> .gitignore
-    ```
+```
 
     Finally, commit these changes:
 
-    ```bash
+```bash
 git commit -m "Remove android/.idea/ from git tracking and update .gitignore"
-    ```
+```
 
 2.  **Remove the directory from Git AND your local machine:**
 
     If you want to completely remove the directory from both Git and your local filesystem:
 
-    ```bash
+```bash
 git rm -rf android/.idea/
-    ```
+```
 
     Then commit the removal:
 
-    ```bash
+```bash
 git commit -m "Remove android/.idea/ completely"
-    ```
+```
 
 **💡 Important Tip:** `.idea/` folders are specific to IDEs (like Android Studio or IntelliJ) and generally should not be version controlled. Excluding them from your repository helps avoid conflicts and keeps your repository clean and focused on source code.
+
+
+
+## 8. Advanced Topics
+
+This section delves into more advanced Git topics, including how to clean your Git history of sensitive data and how to set up SSH keys for secure authentication with GitHub.
+
+### 8.1 Clean Git History (Removing Sensitive Data)
+
+If sensitive credentials, API keys, or other confidential information are accidentally committed to your Git repository, simply deleting the file and committing again is not enough. The sensitive data will still exist in the repository's history. To truly remove such data from all commits, you need to rewrite the Git history.
+
+**Warning:** Rewriting Git history is a powerful operation that changes the commit hashes. If the repository has already been shared with others, this can cause significant issues for collaborators. Always communicate with your team before performing such operations.
+
+Two common tools for cleaning Git history are `git-filter-repo` and BFG Repo-Cleaner.
+
+**Using `git-filter-repo`:**
+
+`git-filter-repo` is a highly efficient tool for rewriting repository history. It needs to be installed separately.
+
+1.  **Install `git-filter-repo` (if not already installed):**
+
+```bash
+pip install git-filter-repo
+```
+
+2.  **Remove the sensitive content from all commits:**
+
+    This example demonstrates removing a file named `README.md` from the history. Replace `README.md` with the actual path to the file containing sensitive data. The `--invert-paths` flag ensures that everything *except* the specified path is kept, effectively removing the path.
+
+```bash
+git filter-repo --path path/to/sensitive-file.txt --invert-paths --force
+```
+
+    If the sensitive data is within a specific file that you want to keep but remove the sensitive content from, you might need more advanced filtering or use BFG Repo-Cleaner.
+
+**Using BFG Repo-Cleaner:**
+
+BFG Repo-Cleaner is another powerful tool, often simpler to use for common cleanup tasks like removing large files or sensitive data. It is a JAR file and requires Java to run.
+
+For more complex cleanup scenarios, such as removing specific text from all files in the history, BFG Repo-Cleaner might be more suitable. Refer to its official documentation for detailed usage instructions.
+
+### 8.2 SSH Key Setup for GitHub
+
+SSH (Secure Shell) keys provide a secure way to authenticate with GitHub without exposing your username and password. This is generally recommended for frequent interactions with remote repositories.
+
+1.  **Check for existing SSH keys:**
+
+    Open your terminal and list the contents of your `.ssh` directory:
+
+```bash
+ls -al ~/.ssh
+```
+
+    Look for files like `id_rsa.pub`, `id_ecdsa.pub`, or `id_ed25519.pub`. These are your public SSH keys. If you find existing keys, you might be able to use one of them. If no keys exist, proceed to generate a new SSH key.
+
+2.  **Generate a new SSH key:**
+
+    Run the following command, replacing `your-email@example.com` with your actual email address associated with your GitHub account:
+
+```bash
+ssh-keygen -t ed25519 -C "your-email@example.com"
+```
+
+    The `ed25519` algorithm is generally recommended for its security and performance. If your system does not support `ed25519`, you can use the RSA algorithm:
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
+```
+
+    Follow the prompts to save the key to the default location (`~/.ssh/id_ed25519` or `~/.ssh/id_rsa`) and optionally add a strong passphrase for extra security. A passphrase encrypts your private key on disk, requiring you to enter it whenever you use the key.
+
+3.  **Add the SSH key to the `ssh-agent`:**
+
+    The `ssh-agent` is a program that holds your private keys in memory, so you don't have to enter your passphrase every time you use your SSH key.
+
+    *   **Start the `ssh-agent` in the background:**
+
+```bash
+eval "$(ssh-agent -s)"
+```
+
+    *   **Add your SSH private key to the agent:**
+
+```bash
+ssh-add ~/.ssh/id_ed25519
+```
+
+        (Replace `id_ed25519` with the name of your private key file if it's different (e.g., `id_rsa`). If you set a passphrase, you will be prompted to enter it here.
+
+4.  **Add the SSH key to your GitHub account:**
+
+    You need to add your public SSH key to your GitHub account so GitHub can authenticate you.
+
+    *   **Copy your public key to your clipboard:**
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+        Copy the entire output.
+
+    *   **Go to GitHub:** Navigate to `Settings` -> `SSH and GPG keys` -> `New SSH key`. Paste the copied public key into the field and give it a descriptive title (e.g., "My Laptop SSH Key").
+
+5.  **Test Your SSH Connection:**
+
+    After adding the key to GitHub, test your connection to ensure everything is set up correctly:
+
+```bash
+ssh -T git@github.com
+```
+
+    A successful connection will display a message like: `Hi your-username! You've successfully authenticated, but GitHub does not provide shell access.`
+
+**Bonus: Typo in Your Remote URL?**
+
+Sometimes, the issue might be a simple typo in your remote URL. Double-check the actual repository name on GitHub and correct it if needed:
+
+```bash
+git remote set-url origin git@github.com:your-username/your-correct-repo-name.git
+```
+
+## 9. Summary of Key Git Commands
+
+This section provides a quick reference for some of the most frequently used Git commands discussed in this document.
+
+| Command | Description | Example Usage |
+|---|---|---|
+| `git init` | Initializes a new Git repository in the current directory. | `git init` |
+| `git status` | Shows the status of changes as untracked, modified, or staged. | `git status` |
+| `git add .` | Stages all changes in the current directory for the next commit. | `git add .` |
+| `git commit -m "Message"` | Records staged changes to the repository with a message. | `git commit -m "Initial commit"` |
+| `git remote add origin URL` | Adds a new remote repository. | `git remote add origin https://github.com/user/repo.git` |
+| `git remote -v` | Lists all configured remote repositories. | `git remote -v` |
+| `git remote set-url origin URL` | Changes the URL of an existing remote. | `git remote set-url origin https://github.com/user/new-repo.git` |
+| `git push -u origin branch` | Pushes local commits to a remote repository and sets upstream. | `git push -u origin main` |
+| `git pull origin branch` | Fetches from and integrates with another repository or a local branch. | `git pull origin main` |
+| `git fetch origin` | Downloads objects and refs from another repository. | `git fetch origin` |
+| `git branch` | Lists, creates, or deletes branches. | `git branch` |
+| `git checkout branch` | Switches to a specified branch. | `git checkout develop` |
+| `git checkout -b new-branch` | Creates a new branch and switches to it. | `git checkout -b feature/new-feature` |
+| `git config --list` | Lists all Git configurations. | `git config --list` |
+| `git config --global user.name "Name"` | Sets the global user name for commits. | `git config --global user.name "John Doe"` |
+| `git config --global user.email "Email"` | Sets the global user email for commits. | `git config --global user.email "john.doe@example.com"` |
+| `git log` | Shows the commit history. | `git log` |
+| `git log --oneline` | Shows a compact commit history. | `git log --oneline` |
+| `git commit --amend -m "Msg"` | Amends the last commit message. | `git commit --amend -m "Updated message"` |
+| `git rm --cached file` | Untracks a file from Git without deleting it locally. | `git rm --cached unwanted-file.log` |
+| `git check-ignore -v file` | Shows which .gitignore rule is ignoring a file. | `git check-ignore -v .github/workflows/deploy.yml` |
