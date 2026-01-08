@@ -69,6 +69,9 @@ This document serves as a comprehensive guide to Git, a powerful distributed ver
 
 To begin working with Git, you can either initialize a new repository for a new project or clone an existing repository from a remote source.
 
+### What is version control and why is it important?
+Version control (like Git) is a system that tracks changes in code over time. It lets multiple developers collaborate safely by merging changes, and it keeps a history of everything done. You can go back to previous versions if something breaks. This is important because it helps manage code, avoid conflicts, and keep a record of all work.
+
 ### 2.1 Initializing a New Repository
 
 When starting a new project that you wish to track with Git, you will typically initialize a new Git repository in your project directory. This command creates a new `.git` subdirectory, which contains all the necessary Git metadata for the repository.
