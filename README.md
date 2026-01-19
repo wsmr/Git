@@ -55,6 +55,7 @@
 12. [Advanced Topics](#12-advanced-topics)
     - 12.1 [Cleaning Git History (Removing Sensitive Data)](#121-cleaning-git-history-removing-sensitive-data)
     - 12.2 [SSH Key Setup for GitHub](#122-ssh-key-setup-for-github)
+    - 12.3 [Custom Git Aliases and Functions](#123-custom-git-aliases-and-functions)
 13. [Summary of Key Git Commands](#13-summary-of-key-git-commands)
 
 ---
@@ -1483,6 +1484,104 @@ cat ~/.ssh/id_ed25519.pub
 
 ```bash
 ssh -T git@github.com
+```
+
+---
+
+### 12.3 Custom Git Aliases and Functions
+
+Creating custom aliases and functions can significantly speed up your daily Git workflow by combining multiple frequently-used commands into a single shortcut.
+
+#### Creating a Custom Pre-Commit Command
+
+If you frequently run the same sequence of commands before committing (checking branch, repository URL, staging files, and viewing status), you can create a custom shell function to automate this workflow.
+
+**For macOS/Linux (zsh or bash):**
+
+1. **Open your shell configuration file:**
+```bash
+# For zsh (default on macOS)
+nano ~/.zshrc
+
+# For bash
+nano ~/.bashrc
+```
+
+2. **Add the following function:**
+```bash
+ggg() {
+    echo "Branch: $(git branch --show-current)"
+    echo "Repo: $(git remote get-url origin)"
+    git add .
+    git status
+    
+    if [ -n "$*" ]; then
+        git commit -m"$*"
+    fi
+}
+```
+
+3. **Save and reload your shell:**
+```bash
+# For zsh
+source ~/.zshrc
+
+# For bash
+source ~/.bashrc
+```
+
+**Usage:**
+```bash
+# Run pre-commit checks only (shows branch, repo, stages files, displays status)
+ggg
+
+# Run pre-commit checks AND commit with message
+ggg Initial commit
+ggg Fixed login bug
+ggg Added user authentication feature
+```
+
+**What this function does:**
+
+1. Displays current branch name
+2. Shows remote repository URL
+3. Stages all changes with `git add .`
+4. Shows repository status
+5. If you provide a message, commits with that message
+6. If no message is provided, stops after showing status
+
+**Customization:**
+
+You can modify this function to fit your specific workflow:
+```bash
+# Example: Add automatic push after commit
+ggg() {
+    echo "Branch: $(git branch --show-current)"
+    echo "Repo: $(git remote get-url origin)"
+    git add .
+    git status
+    
+    if [ -n "$*" ]; then
+        git commit -m"$*"
+        git push
+    fi
+}
+
+# Example: Add confirmation before staging
+ggg() {
+    echo "Branch: $(git branch --show-current)"
+    echo "Repo: $(git remote get-url origin)"
+    
+    read -p "Stage all changes? (y/n): " confirm
+    if [ "$confirm" = "y" ]; then
+        git add .
+        git status
+        
+        if [ -n "$*" ]; then
+            git commit -m"$*"
+        fi
+    fi
+}
 ```
 
 ---
